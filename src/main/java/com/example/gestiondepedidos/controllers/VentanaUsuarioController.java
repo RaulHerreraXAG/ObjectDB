@@ -6,14 +6,8 @@ import com.example.gestiondepedidos.domain.HibernateUtil;
 import com.example.gestiondepedidos.item.Item;
 import com.example.gestiondepedidos.pedido.Pedido;
 import com.example.gestiondepedidos.pedido.PedidoDAOImp;
-import com.example.gestiondepedidos.productos.Producto;
-import com.example.gestiondepedidos.productos.ProductoDAOImp;
-import com.example.gestiondepedidos.usuario.Usuario;
 import com.example.gestiondepedidos.usuario.UsuarioDAOImp;
-import javafx.beans.Observable;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -27,7 +21,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -120,7 +113,9 @@ public class VentanaUsuarioController implements Initializable {
 
     }
 
-
+    /**
+     * Carga la lista observable con los pedidos del usuario actual y calcula sus totales.
+     */
     private void cargarLista() {
         observableList.setAll(Sesion.getUsuario().getPedidos());
         for (Pedido pedido : observableList) {
@@ -130,6 +125,13 @@ public class VentanaUsuarioController implements Initializable {
         }
         tvPedidos.setItems(observableList);
     }
+
+    /**
+     * Calcula el total de un pedido sumando los precios de los productos por la cantidad.
+     *
+     * @param pedido Pedido del cual se calculará el total.
+     * @return El total del pedido.
+     */
     private Double calcularTotalPedido(Pedido pedido) {
         Double total  = 0.0;
 
@@ -140,7 +142,12 @@ public class VentanaUsuarioController implements Initializable {
     }
 
 
-
+    /**
+     * Método que añade un nuevo pedido.
+     *
+     * @param actionEvent Evento de acción que desencadena la adición de un nuevo pedido.
+     * @throws IOException Si hay un error al intentar cargar la escena de detalles del pedido.
+     */
     @javafx.fxml.FXML
     public void anadirpedido(ActionEvent actionEvent) throws IOException {
         Pedido nuevoPedido = new Pedido();
@@ -191,9 +198,14 @@ public class VentanaUsuarioController implements Initializable {
         //Después de la alerta, lleva a la ventana DetallesPedidoController del respectivo pedido.
         Main.changeScene("detallesPedido-controller.fxml","Detalles del pedido");
 
-
     }
 
+
+    /**
+     * Método para eliminar un pedido seleccionado.
+     *
+     * @param actionEvent Evento de acción que desencadena la eliminación del pedido.
+     */
     @javafx.fxml.FXML
     public void DeletePedido(ActionEvent actionEvent) {
         //Se coge el pedido seleccionado.
@@ -211,13 +223,19 @@ public class VentanaUsuarioController implements Initializable {
                 observableList.remove(pedidoSeleccionado);
             }
         } else {
-            //Muestra un mensaje de error o advertencia al usuario si no se ha seleccionado ningún pedido para eliminar.
+            //Muestra un mensaje de error o advierte al usuario si no se ha indicado ningún pedido para eliminarlo.
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setContentText("Por favor, selecciona un pedido para eliminar.");
             alert.showAndWait();
         }
     }
 
+
+    /**
+     * Método para cerrar la sesión actual y volver a la pantalla de inicio de sesión.
+     *
+     * @param actionEvent Evento de acción que desencadena el cierre de sesión.
+     */
     @javafx.fxml.FXML
     public void cerrarSesion(ActionEvent actionEvent) {
         Sesion.setUsuario(null);

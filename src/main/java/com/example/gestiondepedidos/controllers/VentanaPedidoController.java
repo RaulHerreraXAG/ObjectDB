@@ -6,7 +6,6 @@ import com.example.gestiondepedidos.item.Item;
 import com.example.gestiondepedidos.item.ItemDAOImp;
 import com.example.gestiondepedidos.pedido.Pedido;
 import com.example.gestiondepedidos.pedido.PedidoDAOImp;
-import com.example.gestiondepedidos.usuario.UsuarioDAOImp;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -40,8 +39,6 @@ public class VentanaPedidoController implements Initializable {
     private ItemDAOImp itemDAO = new ItemDAOImp();
     private ObservableList<Item> observableList;
 
-
-    private ObservableList<Item> observableListItem;
     @javafx.fxml.FXML
     private Button btnEliminar;
     @javafx.fxml.FXML
@@ -86,13 +83,13 @@ public class VentanaPedidoController implements Initializable {
         observableList.setAll(Sesion.getPedido().getItems());
 
         tvPedido.setItems(observableList);
-
-
-
-
     }
 
-
+    /**
+     * Elimina un item del pedido actual.
+     *
+     * @param actionEvent Evento de acción que desencadena la eliminación del ítem.
+     */
     @javafx.fxml.FXML
     public void eliminar(ActionEvent actionEvent) {
         //Se coge el item seleccionado.
@@ -117,6 +114,12 @@ public class VentanaPedidoController implements Initializable {
         }
     }
 
+    /**
+     * Permite añadir un nuevo item al pedido actual.
+     *
+     * @param actionEvent Evento de acción que desencadena la adición de un ítem.
+     * @throws IOException Si hay un problema al cambiar a la ventana de añadir ítems.
+     */
     public void anadir(ActionEvent actionEvent) throws IOException {
         // Crea un nuevo ítem.
         var item = new Item();
@@ -128,13 +131,22 @@ public class VentanaPedidoController implements Initializable {
         Main.anadir("anadir-pedido.fxml", "Añadir Item");
     }
 
-
-
+    /**
+     * Regresa a la ventana principal del usuario.
+     *
+     * @param actionEvent Evento de acción que desencadena el regreso a la ventana principal del usuario.
+     * @throws IOException Si hay un problema al cambiar a la ventana principal del usuario.
+     */
     @javafx.fxml.FXML
     public void Volver(ActionEvent actionEvent) throws IOException {
         Main.changeScene("ventana-usuario.fxml","Gestor de Pedidos");
     }
 
+    /**
+     * Cierra la sesión del usuario actual y redirige a la ventana de inicio de sesión.
+     *
+     * @param actionEvent Evento de acción que desencadena el cierre de sesión.
+     */
     @javafx.fxml.FXML
     public void CerrarSesion(ActionEvent actionEvent) {
         Sesion.setUsuario(null);

@@ -1,7 +1,5 @@
 package com.example.gestiondepedidos.usuario;
 
-
-
 import com.example.gestiondepedidos.domain.HibernateUtil;
 import com.example.gestiondepedidos.domain.DAO;
 import org.hibernate.Session;
@@ -9,12 +7,10 @@ import org.hibernate.query.Query;
 
 import java.util.ArrayList;
 
-
 /**
  * Implementación de la interfaz UsuarioDAO para acceder y gestionar datos de usuarios en una base de datos.
  */
 public class UsuarioDAOImp implements DAO<Usuario> {
-
 
     @Override
     public ArrayList<Usuario> getAll() {
@@ -45,14 +41,21 @@ public class UsuarioDAOImp implements DAO<Usuario> {
 
     @Override
     public void update(Usuario data) {
-
+        // Implementación para actualizar los datos del usuario en la base de datos.
     }
 
     @Override
     public void delete(Usuario data) {
-
+        // Implementación para eliminar los datos del usuario de la base de datos.
     }
 
+    /**
+     * Valida las credenciales de inicio de sesión del usuario.
+     *
+     * @param email    Email del usuario.
+     * @param password Contraseña del usuario.
+     * @return El objeto Usuario si las credenciales son válidas, de lo contrario, null.
+     */
     public Usuario validateUser(String email, String password) {
         Usuario result = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
