@@ -1,0 +1,147 @@
+package com.example.gestiondepedidos.controllers;
+
+import com.example.gestiondepedidos.Main;
+import com.example.gestiondepedidos.Sesion;
+import com.example.gestiondepedidos.item.Item;
+import com.example.gestiondepedidos.item.ItemDAOImp;
+import com.example.gestiondepedidos.pedido.Pedido;
+import com.example.gestiondepedidos.pedido.PedidoDAOImp;
+import com.example.gestiondepedidos.usuario.UsuarioDAOImp;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
+
+/**
+ * Controlador de la ventana de detalles de pedido en la aplicación de gestión de pedidos.
+ * Esta clase gestiona la interfaz de usuario para mostrar los detalles de un pedido y permite al usuario cerrar sesión o volver atrás.
+ */
+public class VentanaPedidoController implements Initializable {
+    @javafx.fxml.FXML
+    private TableView<Item> tvPedido;
+    @javafx.fxml.FXML
+    private TableColumn<Item, String> colId;
+    @javafx.fxml.FXML
+    private TableColumn<Item, String> colCodPedido;
+    @javafx.fxml.FXML
+    private TableColumn<Item, String> colCantidad;
+    @javafx.fxml.FXML
+    private TableColumn<Item, String> colProducto;
+    private ItemDAOImp itemDAO = new ItemDAOImp();
+    private ObservableList<Item> observableList;
+
+
+    private ObservableList<Item> observableListItem;
+    @javafx.fxml.FXML
+    private Button btnEliminar;
+    @javafx.fxml.FXML
+    private Button btnAnadir;
+    @javafx.fxml.FXML
+    private MenuItem menuItemVolver;
+    @javafx.fxml.FXML
+    private MenuItem menuItemSesion;
+
+    /**
+     * Constructor de la clase VentanaPedidoController.
+     */
+    public VentanaPedidoController(){}
+
+    /**
+     * Inicializa la interfaz de usuario y carga los detalles del pedido seleccionado.
+     *
+     * @param url             Ubicación relativa del archivo FXML.
+     * @param resourceBundle  Recursos utilizados para la inicialización.
+     */
+    public void initialize(URL url, ResourceBundle resourceBundle){
+        this.colId.setCellValueFactory((fila) ->{
+            String id = String.valueOf(fila.getValue().getId());
+            return new SimpleStringProperty(id);
+        });
+        this.colCodPedido.setCellValueFactory((fila) -> {
+            String cPedido = String.valueOf(fila.getValue().getCodigo().getCodigo());
+            return new SimpleStringProperty(cPedido);
+        });
+        this.colCantidad.setCellValueFactory((fila) -> {
+            String cCantidad = String.valueOf(fila.getValue().getCantidad());
+            return new SimpleStringProperty(cCantidad);
+        });
+        this.colProducto.setCellValueFactory((fila) -> {
+            String cProducto = String.valueOf(fila.getValue().getProducto().getNombre());
+            return new SimpleStringProperty(cProducto);
+        });
+
+        observableList = FXCollections.observableArrayList();
+
+        Sesion.setPedido((new PedidoDAOImp()).get(Sesion.getPedido().getId()));
+        observableList.setAll(Sesion.getPedido().getItems());
+
+        tvPedido.setItems(observableList);
+
+
+
+
+    }
+
+
+    @javafx.fxml.FXML
+    public void eliminar(ActionEvent actionEvent) {
+        //Se coge el item seleccionado.
+        Item itemSeleccionado = tvPedido.getSelectionModel().getSelectedItem();
+
+        //Confirmación de eliminación mediante un diálogo de confirmación.
+        if (itemSeleccionado != null) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setContentText("¿Deseas borrar el item: " + itemSeleccionado.getId() + ", que contiene el producto: " + itemSeleccionado.getProducto().getNombre() + "?");
+            var result = alert.showAndWait().get();
+
+            //Si se confirma la eliminación, se borra el ítem seleccionado de la lista y de la base de datos.
+            if (result.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+                itemDAO.delete(itemSeleccionado);
+                observableList.remove(itemSeleccionado);
+            }
+        } else {
+            //Muestra un mensaje de error o advertencia al usuario si no se ha seleccionado ningún pedido para eliminar.
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setContentText("Por favor, selecciona un pedido para eliminar.");
+            alert.showAndWait();
+        }
+    }
+
+    public void anadir(ActionEvent actionEvent) throws IOException {
+        // Crea un nuevo ítem.
+        var item = new Item();
+
+        // Establece el ítem recién creado en la sesión actual para su posterior uso.
+        Sesion.setItem(item);
+
+        //Lleva a la pantalla de AnhadirItemController.
+        Main.anadir("anadir-pedido.fxml", "Añadir Item");
+    }
+
+
+
+    @javafx.fxml.FXML
+    public void Volver(ActionEvent actionEvent) throws IOException {
+        Main.changeScene("ventana-usuario.fxml","Gestor de Pedidos");
+    }
+
+    @javafx.fxml.FXML
+    public void CerrarSesion(ActionEvent actionEvent) {
+        Sesion.setUsuario(null);
+        try {
+            Main.changeScene("login.fxml","Inicio de Sesión");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
