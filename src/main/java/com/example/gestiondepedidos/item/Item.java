@@ -2,7 +2,7 @@ package com.example.gestiondepedidos.item;
 
 import com.example.gestiondepedidos.pedido.Pedido;
 import com.example.gestiondepedidos.productos.Producto;
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

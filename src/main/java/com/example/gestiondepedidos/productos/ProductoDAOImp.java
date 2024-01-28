@@ -1,11 +1,13 @@
 package com.example.gestiondepedidos.productos;
 
-import com.example.gestiondepedidos.domain.HibernateUtil;
 import com.example.gestiondepedidos.domain.DAO;
-import org.hibernate.Session;
-import org.hibernate.query.Query;
+import com.example.gestiondepedidos.domain.ObjectDBUtil;
+import com.example.gestiondepedidos.pedido.Pedido;
 
-import java.util.ArrayList;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import java.util.List;
 
 /**
  * Implementación de la interfaz ProductoDAO para acceder y gestionar datos de productos en una base de datos.
@@ -13,11 +15,15 @@ import java.util.ArrayList;
 public class ProductoDAOImp implements DAO<Producto> {
 
     @Override
-    public ArrayList<Producto> getAll() {
-        var salida = new ArrayList<Producto>(0);
-        try (Session sesion = HibernateUtil.getSessionFactory().openSession()) {
-            Query<Producto> query = sesion.createQuery("from Producto", Producto.class);
-            salida = (ArrayList<Producto>) query.getResultList();
+    public List<Producto> getAll() {
+        List<Producto> salida;
+
+        EntityManager em =  ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try{
+            TypedQuery<Producto> query = em.createQuery("select p from Producto p", Producto.class);
+            salida = query.getResultList();
+        } finally {
+            em.close();
         }
         return salida;
     }
@@ -33,13 +39,28 @@ public class ProductoDAOImp implements DAO<Producto> {
     }
 
     @Override
-    public void update(Producto data) {
+    public Pedido update(Producto data) {
         // Implementación para actualizar los datos del producto en la base de datos.
+        return null;
     }
 
     @Override
-    public void delete(Producto data) {
+    public Boolean delete(Producto data) {
         // Implementación para eliminar los datos del producto de la base de datos.
+        return null;
+    }
+
+    public void saveAll(List<Producto> productos) {
+        EntityManager em = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try{
+            em.getTransaction().begin();
+            for(Producto p : productos){
+                em.persist(p);
+            }
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
     }
 }
 

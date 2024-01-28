@@ -1,0 +1,20 @@
+
+<!--
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+    http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+             version="2.1">
+
+    <persistence-unit name="objectdb">
+        <provider>com.objectdb.jpa.Provider</provider>
+        <jta-data-source>yourDataSource</jta-data-source>  Cambia esto según tu configuración
+        <properties>
+            <property name="javax.persistence.jdbc.url" value="" />
+            <property name="javax.persistence.jdbc.user" value="yourObjectDBUser" />
+            <property name="javax.persistence.jdbc.password" value="yourObjectDBPassword" />
+            Otras propiedades de configuración si es necesario
+        </properties>
+    </persistence-unit>
+</persistence>
+-->

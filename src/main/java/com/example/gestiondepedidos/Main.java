@@ -1,11 +1,17 @@
 package com.example.gestiondepedidos;
 
+import com.example.gestiondepedidos.domain.Data;
+import com.example.gestiondepedidos.productos.Producto;
+import com.example.gestiondepedidos.productos.ProductoDAOImp;
+import com.example.gestiondepedidos.usuario.Usuario;
+import com.example.gestiondepedidos.usuario.UsuarioDAOImp;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Clase principal de la aplicación de gestión de pedidos.
@@ -25,6 +31,25 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage stage) throws IOException {
+
+        try{
+            ProductoDAOImp productoDAO = new ProductoDAOImp();
+            List<Producto> productos=productoDAO.getAll();
+            if (productos.isEmpty()){
+                productos= Data.generarProductos();
+                productoDAO.saveAll(productos);
+            }
+
+            UsuarioDAOImp usuarioDAO = new UsuarioDAOImp();
+            List<Usuario> usuarios=usuarioDAO.getAll();
+            if (usuarios.isEmpty()){
+                usuarios=Data.generarUsuario();
+                usuarioDAO.saveAll(usuarios);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         myStage = stage;
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/com/example/views/login.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 700, 500);

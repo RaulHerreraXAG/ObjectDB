@@ -2,10 +2,11 @@ module com.example.gestiondepedidos {
     requires javafx.controls;
     requires javafx.fxml;
     requires lombok;
-    requires jakarta.persistence;
-    requires org.hibernate.orm.core;
     requires java.naming;
     requires java.sql;
+    requires jasperreports;
+    requires javax.persistence;
+
 
 
     opens com.example.gestiondepedidos.usuario;

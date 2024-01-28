@@ -1,6 +1,6 @@
 package com.example.gestiondepedidos.productos;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -39,6 +39,13 @@ public class Producto implements Serializable {
      */
     @Column(name = "cantidad_disponible")
     private Integer cantidad_disponible;
+
+
+    public Producto(String nombre, Double precio, Integer cantidad_disponible) {
+        this.nombre = nombre;
+        this.precio = precio;
+        this.cantidad_disponible = cantidad_disponible;
+    }
 
     @Override
     public String toString(){

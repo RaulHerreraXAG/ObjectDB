@@ -1,3 +1,4 @@
+<!--
 <?xml version='1.0' encoding='utf-8'?>
 <!DOCTYPE hibernate-configuration PUBLIC
         "-//Hibernate/Hibernate Configuration DTD//EN"
@@ -5,10 +6,10 @@
 
 <hibernate-configuration>
 
-    <!-- a SessionFactory instance listed as /jndi/name -->
+    <!-- a SessionFactory instance listed as /jndi/name
     <session-factory>
 
-        <!-- properties -->
+        <!-- properties
         <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
         <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/gestionpedidos</property>
         <property name="hibernate.connection.password"></property>
@@ -24,3 +25,5 @@
     </session-factory>
 
 </hibernate-configuration>
+
+-->

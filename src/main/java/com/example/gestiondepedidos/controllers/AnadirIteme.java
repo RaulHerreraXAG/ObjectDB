@@ -64,6 +64,8 @@ public class AnadirIteme {
             item.setProducto(ComboBoxP.getSelectionModel().getSelectedItem());
             Sesion.setItem((new ItemDAOImp()).save(item));
             Sesion.setItem(item);
+            ProductoDAOImp productoDAO = new ProductoDAOImp();
+            System.out.println(productoDAO.getAll());
             Main.detalles("ventana-pedido.fxml", "Detalles del Pedido");
         }
     }

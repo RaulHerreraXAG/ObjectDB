@@ -1,6 +1,9 @@
 package com.example.gestiondepedidos.domain;
 
-import java.util.ArrayList;
+import com.example.gestiondepedidos.item.Item;
+import com.example.gestiondepedidos.pedido.Pedido;
+
+import java.util.List;
 
 /**
  * Interfaz genérica para operaciones CRUD básicas (Crear, Leer, Actualizar, Eliminar) en la base de datos.
@@ -14,7 +17,7 @@ public interface DAO<T> {
      *
      * @return Una lista de todos los elementos del tipo T.
      */
-    public ArrayList<T> getAll();
+    public List<T> getAll();
 
     /**
      * Obtiene un elemento específico del tipo T basado en su identificador.
@@ -23,6 +26,8 @@ public interface DAO<T> {
      * @return El elemento del tipo T encontrado o nulo si no se encuentra.
      */
     public T get(Integer id);
+
+
 
     /**
      * Guarda un nuevo elemento del tipo T en la base de datos.
@@ -36,13 +41,15 @@ public interface DAO<T> {
      * Actualiza un elemento existente del tipo T en la base de datos.
      *
      * @param data Elemento del tipo T a actualizar en la base de datos.
+     * @return
      */
-    public void update(T data);
+    public Pedido update(T data);
 
     /**
      * Elimina un elemento existente del tipo T de la base de datos.
      *
      * @param data Elemento del tipo T a eliminar de la base de datos.
+     * @return
      */
-    public void delete(T data);
+    public Boolean delete(T data);
 }

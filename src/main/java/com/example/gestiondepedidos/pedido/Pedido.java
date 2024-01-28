@@ -2,7 +2,7 @@ package com.example.gestiondepedidos.pedido;
 
 import com.example.gestiondepedidos.item.Item;
 import com.example.gestiondepedidos.usuario.Usuario;
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +19,6 @@ import java.util.List;
  */
 @Data
 @Entity
-@Table(name = "pedido")
 public class Pedido implements Serializable {
     /**
      * Identificador único del pedido.
@@ -31,13 +30,13 @@ public class Pedido implements Serializable {
     /**
      * Código identificativo del pedido.
      */
-    @Column(name = "codigo")
+
     private String codigo;
 
     /**
      * Fecha en la que se realizó el pedido.
      */
-    @Column(name = "fecha")
+
     private String fecha;
 
     /**
@@ -51,7 +50,7 @@ public class Pedido implements Serializable {
     /**
      * Total del pedido.
      */
-    @Column(name = "total")
+
     private Double total;
 
     /**
@@ -69,5 +68,15 @@ public class Pedido implements Serializable {
                 ", total=" + total +
                 ", usuario=" + usuario.getId() +
                 '}';
+    }
+
+    public static void merge(Pedido origen, Pedido destino) {
+
+        destino.setId(origen.getId());
+        destino.setCodigo(origen.getCodigo());
+        destino.setUsuario(origen.getUsuario());
+        destino.setFecha(origen.getFecha());
+        destino.setTotal(origen.getTotal());
+
     }
 }

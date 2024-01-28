@@ -2,7 +2,6 @@ package com.example.gestiondepedidos.controllers;
 
 import com.example.gestiondepedidos.Main;
 import com.example.gestiondepedidos.Sesion;
-import com.example.gestiondepedidos.domain.HibernateUtil;
 import com.example.gestiondepedidos.item.Item;
 import com.example.gestiondepedidos.pedido.Pedido;
 import com.example.gestiondepedidos.pedido.PedidoDAOImp;
@@ -14,14 +13,15 @@ import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
-import org.hibernate.Session;
-import org.hibernate.query.Query;
+
 
 import java.io.IOException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.ResourceBundle;
+
+import static com.example.gestiondepedidos.pedido.PedidoDAOImp.calcularTotalPedido;
 
 /**
  * Controlador de la ventana de usuario en la aplicación de gestión de pedidos.
@@ -125,13 +125,6 @@ public class VentanaUsuarioController implements Initializable {
         }
         tvPedidos.setItems(observableList);
     }
-
-    /**
-     * Calcula el total de un pedido sumando los precios de los productos por la cantidad.
-     *
-     * @param pedido Pedido del cual se calculará el total.
-     * @return El total del pedido.
-     */
     private Double calcularTotalPedido(Pedido pedido) {
         Double total  = 0.0;
 
@@ -143,6 +136,15 @@ public class VentanaUsuarioController implements Initializable {
 
 
     /**
+     * Calcula el total de un pedido sumando los precios de los productos por la cantidad.
+     *
+     * @param pedido Pedido del cual se calculará el total.
+     * @return El total del pedido.
+     */
+
+
+
+    /**
      * Método que añade un nuevo pedido.
      *
      * @param actionEvent Evento de acción que desencadena la adición de un nuevo pedido.
@@ -150,53 +152,36 @@ public class VentanaUsuarioController implements Initializable {
      */
     @javafx.fxml.FXML
     public void anadirpedido(ActionEvent actionEvent) throws IOException {
-        Pedido nuevoPedido = new Pedido();
+        Pedido pedidoNuevo = new Pedido();
+        //añadimos la fecha de hoy al pedido
+        pedidoNuevo.setFecha(LocalDate.now() + "");
 
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-
-            Query<String> query = session.createQuery("select max(p.codigo) from Pedido p", String.class);
-            String ultimoCodigoPedido = query.uniqueResult();
-
-
-            int ultimoNumero = Integer.parseInt(ultimoCodigoPedido.substring(4));
-            int nuevoNumero = ultimoNumero + 1;
-            String nuevoCodigoPedido = "PED-" + String.format("%03d", nuevoNumero);
-
-
-            nuevoPedido.setCodigo(nuevoCodigoPedido);
-        } catch (Exception e) {
-            e.printStackTrace();
+        PedidoDAOImp pedidoDAO = new PedidoDAOImp();
+        String ultimoCodigo = pedidoDAO.getUltimoCodigo();
+        if (ultimoCodigo != null){
+            int ultimoNum = Integer.parseInt(ultimoCodigo.substring(4));
+            int nuevoNum = ultimoNum + 1;
+            String nuevoCodigo = "PED-" + String.format("%03d", nuevoNum);
+            //añadimos su codigo de pedido incrementado
+            pedidoNuevo.setCodigo(nuevoCodigo);
+        }else{
+            pedidoNuevo.setCodigo("PED-001");
+            System.out.println("codigo null");
         }
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String fechaActual = dateFormat.format(new Date());
-        nuevoPedido.setFecha(fechaActual);
-
-        nuevoPedido.setUsuario(Sesion.getUsuario());
-        nuevoPedido.setId(0);
 
 
-        if (nuevoPedido.getItems().isEmpty()) {
-            nuevoPedido.setTotal(0.0);
-        }
+        //añadimos el usuario que ha creado ese pedido
+        pedidoNuevo.setUsuario(Sesion.getUsuario());
 
-        //Agrega el nuevo pedido a la lista Observable.
-        observableList.add(nuevoPedido);
+        //añadimos el total a la tabla
+        Double totalPedido = calcularTotalPedido(pedidoNuevo);
+        pedidoNuevo.setTotal(totalPedido);
 
-
-        tvPedidos.setItems(observableList);
-        Sesion.setPedido((new PedidoDAOImp()).save(nuevoPedido));
-        Sesion.setPedido(nuevoPedido);
-
-        //Alerta que indica que el pedido fue creado con éxito.
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("¡Éxito!");
-        alert.setHeaderText("Tu pedido ha sido creado");
-        alert.setContentText("Código de pedido: " + Sesion.getPedido().getCodigo());
-        alert.showAndWait();
-
-        //Después de la alerta, lleva a la ventana DetallesPedidoController del respectivo pedido.
-        Main.changeScene("detallesPedido-controller.fxml","Detalles del pedido");
+        //añadimos el pedido a la tabla
+        tvPedidos.getItems().add(pedidoNuevo);
+        //guardamos el pedido en la base de datos
+        Sesion.setPedido((new PedidoDAOImp()).save(pedidoNuevo));
 
     }
 

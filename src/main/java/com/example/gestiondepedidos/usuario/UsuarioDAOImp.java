@@ -1,11 +1,14 @@
 package com.example.gestiondepedidos.usuario;
 
-import com.example.gestiondepedidos.domain.HibernateUtil;
 import com.example.gestiondepedidos.domain.DAO;
-import org.hibernate.Session;
-import org.hibernate.query.Query;
+import com.example.gestiondepedidos.domain.ObjectDBUtil;
+import com.example.gestiondepedidos.pedido.Pedido;
 
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementación de la interfaz UsuarioDAO para acceder y gestionar datos de usuarios en una base de datos.
@@ -13,24 +16,28 @@ import java.util.ArrayList;
 public class UsuarioDAOImp implements DAO<Usuario> {
 
     @Override
-    public ArrayList<Usuario> getAll() {
-        var salida = new ArrayList<Usuario>(0);
+    public List<Usuario> getAll() {
+        List<Usuario> salida;
 
-        try (Session s = HibernateUtil.getSessionFactory().openSession()) {
-            Query<Usuario> q = s.createQuery("from Usuario", Usuario.class);
-            salida = (ArrayList<Usuario>) q.getResultList();
+        EntityManager em = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try{
+            TypedQuery<Usuario> query = em.createQuery("select u from Usuario u", Usuario.class);
+            salida = query.getResultList();
+        } finally {
+            em.close();
         }
         return salida;
     }
 
     @Override
     public Usuario get(Integer id) {
-        var salida = new Usuario();
-
-        try (Session s = HibernateUtil.getSessionFactory().openSession()) {
-            salida = s.get(Usuario.class, id);
+        Usuario salida = null;
+        EntityManager em = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try {
+            salida = em.find(Usuario.class, id);
+        } finally {
+            em.close();
         }
-
         return salida;
     }
 
@@ -40,36 +47,62 @@ public class UsuarioDAOImp implements DAO<Usuario> {
     }
 
     @Override
-    public void update(Usuario data) {
+    public Pedido update(Usuario data) {
         // Implementación para actualizar los datos del usuario en la base de datos.
+        return null;
     }
 
     @Override
-    public void delete(Usuario data) {
+    public Boolean delete(Usuario data) {
         // Implementación para eliminar los datos del usuario de la base de datos.
+        return null;
     }
 
     /**
      * Valida las credenciales de inicio de sesión del usuario.
      *
-     * @param email    Email del usuario.
-     * @param password Contraseña del usuario.
+     * @param email  Email del usuario.
+     * @param contrasenya Contraseña del usuario.
      * @return El objeto Usuario si las credenciales son válidas, de lo contrario, null.
      */
-    public Usuario validateUser(String email, String password) {
+    public Usuario validateUser(String email, String contrasenya) {
         Usuario result = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Query<Usuario> q = session.createQuery("from Usuario where email=:u and contrasenya=:p", Usuario.class);
-            q.setParameter("u", email);
-            q.setParameter("p", password);
+        List<Usuario> lista = new ArrayList<>();
+        EntityManager em = (EntityManager) ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try {
 
+            TypedQuery<Usuario> query = em.createQuery("SELECT u FROM Usuario u WHERE u.email = :u AND u.contrasenya = :p", Usuario.class);
+            query.setParameter("u", email);
+            query.setParameter("p", contrasenya);
+            lista = query.getResultList();
             try {
-                result = q.getSingleResult();
+                result = lista.get(0);
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                e.printStackTrace();
             }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
+
         return result;
     }
+
+    public void saveAll(List<Usuario> usuarios) {
+        EntityManager em = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try{
+            em.getTransaction().begin();
+            for(Usuario u : usuarios){
+                em.persist(u);
+            }
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+    }
+
+
+
+
 }
 

@@ -14,10 +14,22 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
+import net.sf.jasperreports.view.JasperViewer;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -47,6 +59,8 @@ public class VentanaPedidoController implements Initializable {
     private MenuItem menuItemVolver;
     @javafx.fxml.FXML
     private MenuItem menuItemSesion;
+    @javafx.fxml.FXML
+    private Button btnDescargar;
 
     /**
      * Constructor de la clase VentanaPedidoController.
@@ -155,5 +169,26 @@ public class VentanaPedidoController implements Initializable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+
+    @javafx.fxml.FXML
+    public void descargar(ActionEvent actionEvent) throws SQLException, JRException {
+        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/gestionpedidos", "root", "");
+        HashMap<String, Object> hashMap = new HashMap<>();
+
+        hashMap.put("nombreEmpresa", "Pedidos Papaya.SL");
+        hashMap.put("pedido",Sesion.getPedido().getCodigo());
+
+        JasperPrint jasperPrint = JasperFillManager.fillReport("ReportJasperjrxml.jasper", hashMap, connection);
+
+        // Mostrar el informe en una ventana
+        JasperViewer.viewReport(jasperPrint, false);
+
+        JRPdfExporter exp = new JRPdfExporter();
+        exp.setExporterInput(new SimpleExporterInput(jasperPrint));
+        exp.setExporterOutput(new SimpleOutputStreamExporterOutput("gestor_pedido.pdf"));
+        exp.setConfiguration(new SimplePdfExporterConfiguration());
+        exp.exportReport();
     }
 }

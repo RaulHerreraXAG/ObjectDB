@@ -1,7 +1,7 @@
 package com.example.gestiondepedidos.usuario;
 
 import com.example.gestiondepedidos.pedido.Pedido;
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 
@@ -45,5 +45,10 @@ public class Usuario implements Serializable {
     @OneToMany(mappedBy = "usuario" , fetch = FetchType.EAGER)
     private List<Pedido> pedidos = new ArrayList<>();
 
-
+    public Usuario(String nombre, String contrasenya, String email, List<Pedido> pedidos) {
+        this.nombre = nombre;
+        this.contrasenya = contrasenya;
+        this.email = email;
+        this.pedidos = pedidos;
+    }
 }
